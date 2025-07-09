@@ -65,7 +65,43 @@
 
   <script>
     "use strict";
-    // Код писать здесь
+    const addFormButton = document.querySelector('.add-form-button');
+    const userName = document.querySelector('.add-form-name');
+    const userComment = document.querySelector('.add-form-text');
+
+    // Добавляем обработчики событий на элементы формы
+    userName.addEventListener('change', () => {
+      console.log('Что-то произошло');
+    });
+    userComment.addEventListener('change', () => {
+      console.log('Что-то снова произошло');
+    });
+
+    // Добавляем обработчик события на кнопку добавления комментария
+    addFormButton.addEventListener('click', () => {
+      const date = new Date();
+      const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth()+1).toString().padStart(2, '0')}.${date.getFullYear().toString().slice(-2)} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+      const newComment = `<div class="comment-header">
+        <div>${userName.value}</div>
+        <div>${formattedDate}</div>
+      </div>
+      <div class="comment-body">
+        <div class="comment-text">
+          ${userComment.value}
+        </div>
+      </div>
+      <div class="comment-footer">
+        <div class="likes">
+          <span class="likes-counter">0</span>
+          <button class="like-button -active-like"></button>
+        </div>
+      </div>`;
+      document.querySelector('.comments').innerHTML += `<li class="comment">${newComment}</li>`;
+      userName.value = '';
+      userComment.value = '';
+    });
+
+ 
     console.log("It works!");
   </script>
 </html>
