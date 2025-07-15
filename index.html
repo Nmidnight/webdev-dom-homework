@@ -65,7 +65,50 @@
 
   <script>
     "use strict";
-    // Код писать здесь
+    
+  const addFormButton = document.querySelector('.add-form-button');
+  const userName = document.querySelector('.add-form-name');
+  const userComment = document.querySelector('.add-form-text');
+ 
+  addFormButton.addEventListener('click', () => {
+    const date = new Date();
+    const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear().toString().slice(-2)} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    const newComment = `<div class="comment-header">
+        <div>${userName.value}</div>
+        <div>${formattedDate}</div>
+      </div>
+      <div class="comment-body">
+        <div class="comment-text">
+          ${userComment.value}
+        </div>
+      </div>
+      <div class="comment-footer">
+        <div class="likes">
+          <span class="likes-counter">0</span>
+          <button class="like-button"></button>
+        </div>
+      </div>`;
+    if (userName.value.trim() !== '' && userComment.value.trim() !== '') {
+      document.querySelector('.comments').innerHTML += `<li class="comment">${newComment}</li>`;
+      userName.value = '';
+      userComment.value = '';
+    } else {
+      alert('Заполните все поля');
+    }
+
+  });
+  document.querySelector('.comments').addEventListener('click', function(event) {
+    if (event.target.classList.contains('like-button')) {
+      const like = event.target;
+      like.classList.toggle('-active-like');
+      const likesCounter = like.previousElementSibling;
+      if (like.classList.contains('-active-like')) {
+        likesCounter.textContent = parseInt(likesCounter.textContent) + 1;
+      } else {
+        likesCounter.textContent = parseInt(likesCounter.textContent) - 1;
+      }
+    }
+  });
     console.log("It works!");
   </script>
 </html>
