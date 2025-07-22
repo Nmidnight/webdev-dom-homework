@@ -8,41 +8,61 @@ export function initEventListeners(
     renderComments,
 ) {
     addFormButton.addEventListener('click', () => {
-        const date = new Date()
-        const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear().toString().slice(-2)} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-
         if (userName.value.trim() === '' || userComment.value.trim() === '') {
             alert('Заполните все поля')
             return
         }
 
-        commentsArr.push({
-            name: escapeHtml(userName.value),
-            date: formattedDate,
-            text: escapeHtml(userComment.value),
-            likes: 0,
-            liked: false,
-        })
-
-        userName.value = ''
-        userComment.value = ''
-        renderComments(commentsList)
+        fetch(
+            'https://wedev-api.sky.pro/api/v1/anastasiya-veremyova/comments',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    text: escapeHtml(userComment.value),
+                    name: escapeHtml(userName.value),
+                }),
+            },
+        )
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((error) => {
+                        throw new Error(error.error)
+                    })
+                }
+                return response.json()
+            })
+            .then(() => {
+                return fetch(
+                    'https://wedev-api.sky.pro/api/v1/anastasiya-veremyova/comments',
+                )
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                commentsArr.length = 0
+                commentsArr.push(...data.comments)
+                renderComments()
+                userName.value = ''
+                userComment.value = ''
+            })
+            .catch((error) => {
+                alert('Ошибка: ' + error.message)
+            })
     })
 
     commentsList.addEventListener('click', function (event) {
         if (event.target.classList.contains('like-button')) {
-            const index = event.target.dataset.index
-            const comment = commentsArr[index]
+            const id = Number(event.target.dataset.id)
+            const comment = commentsArr.find((comment) => comment.id === id)
 
-            if (comment.liked) {
-                comment.likes--
-            } else {
+            if (comment.isLiked === false) {
                 comment.likes++
+            } else {
+                comment.likes--
             }
 
-            comment.liked = !comment.liked
+            comment.isLiked = !comment.isLiked
 
-            renderComments(commentsList)
+            renderComments()
         }
     })
 
