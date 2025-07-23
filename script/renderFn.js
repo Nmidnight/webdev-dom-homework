@@ -1,9 +1,8 @@
 import { commentsArr } from './comments.js'
 import { nl2br } from './escapeHtml.js'
 
-export function renderComments(
-    commentsList = document.querySelector('.comments'),
-) {
+export function renderComments() {
+    const commentsList = document.querySelector('.comments')
     commentsList.innerHTML = ''
     commentsArr.forEach((comment) => {
         const commentElement = document.createElement('li')
