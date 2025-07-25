@@ -1,6 +1,14 @@
 import { escapeHtml } from './escapeHtml.js'
-import { commentsArr } from './comments.js'
+import { commentsArr, fetchCommentsToServer } from './comments.js'
 import { renderComments } from './renderFn.js'
+
+function delay(interval = 300) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve()
+        }, interval)
+    })
+}
 
 export function addComment() {
     const addFormButton = document.querySelector('.add-form-button')
@@ -12,6 +20,12 @@ export function addComment() {
             alert('Заполните все поля')
             return
         }
+        const loader = document.createElement('li')
+        loader.classList.add('loader')
+        loader.innerHTML = 'Новый комментарий добавляется...'
+        document.querySelector('.comments').appendChild(loader)
+        const form = document.querySelector('.add-form-button')
+        form.disabled = true
 
         fetch(
             'https://wedev-api.sky.pro/api/v1/anastasiya-veremyova/comments',
@@ -31,20 +45,14 @@ export function addComment() {
                 }
                 return response.json()
             })
+            .then(() => fetchCommentsToServer())
             .then(() => {
-                return fetch(
-                    'https://wedev-api.sky.pro/api/v1/anastasiya-veremyova/comments',
-                )
-            })
-            .then((response) => response.json())
-            .then((data) => {
-                commentsArr.length = 0
-                commentsArr.push(...data.comments)
-                renderComments()
                 userName.value = ''
                 userComment.value = ''
+                document.querySelector('.add-form-button').disabled = false
             })
             .catch((error) => {
+                console.error('Ошибка при добавлении комментария:', error)
                 alert('Ошибка: ' + error.message)
             })
     })
@@ -52,19 +60,28 @@ export function addComment() {
 
 export function likeComment() {
     const commentsList = document.querySelector('.comments')
-    commentsList.addEventListener('click', function (event) {
-        if (event.target.classList.contains('like-button')) {
-            const id = Number(event.target.dataset.id)
+    commentsList.addEventListener('click', async function (event) {
+        const target = event.target
+
+        if (target.classList.contains('like-button')) {
+            target.classList.add('loading')
+
+            await delay(2000)
+
+            const id = Number(target.dataset.id)
             const comment = commentsArr.find((comment) => comment.id === id)
 
-            if (comment.isLiked === false) {
-                comment.likes++
-            } else {
-                comment.likes--
+            if (comment) {
+                if (!comment.isLiked) {
+                    comment.likes++
+                } else {
+                    comment.likes--
+                }
+
+                comment.isLiked = !comment.isLiked
             }
 
-            comment.isLiked = !comment.isLiked
-
+            target.classList.remove('loading')
             renderComments()
         }
     })

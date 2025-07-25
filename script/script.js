@@ -1,8 +1,9 @@
 'use strict'
 import { addComment, likeComment, quoteComment } from './eventListener.js'
-import { renderComments } from './renderFn.js'
+import { fetchCommentsToServer } from './comments.js'
 
-renderComments()
+fetchCommentsToServer()
+
 addComment()
 likeComment()
 quoteComment()
