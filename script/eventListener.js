@@ -2,6 +2,15 @@ import { escapeHtml } from './escapeHtml.js'
 import { commentsArr, fetchCommentsToServer } from './comments.js'
 import { renderComments } from './renderFn.js'
 
+const loaderForNewComment = document.createElement('div')
+loaderForNewComment.id = 'loader-new-comment'
+loaderForNewComment.classList.add('loader')
+loaderForNewComment.style.display = 'none'
+
+const container = document.querySelector('.container')
+const addForm = container.querySelector('.add-form')
+container.insertBefore(loaderForNewComment, addForm)
+
 function delay(interval = 300) {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -16,32 +25,41 @@ export function addComment() {
     const userComment = document.querySelector('.add-form-text')
 
     addFormButton.addEventListener('click', () => {
+        loaderForNewComment.innerHTML = 'Отправляем комментарий...'
+        loaderForNewComment.style.display = 'block'
         if (userName.value.trim() === '' || userComment.value.trim() === '') {
             alert('Заполните все поля')
             return
         }
-        const loader = document.createElement('li')
-        loader.classList.add('loader')
-        loader.innerHTML = 'Новый комментарий добавляется...'
-        document.querySelector('.comments').appendChild(loader)
+
+        if (userName.value.length < 3 || userComment.value.length < 3) {
+            alert('Имя и комментарий должны быть не короче 3 символов')
+            return
+        }
+
         const form = document.querySelector('.add-form-button')
         form.disabled = true
 
-        fetch(
+        retryPostFetch(
             'https://wedev-api.sky.pro/api/v1/anastasiya-veremyova/comments',
             {
                 method: 'POST',
                 body: JSON.stringify({
                     text: escapeHtml(userComment.value),
                     name: escapeHtml(userName.value),
+                    forceError: true,
                 }),
             },
         )
             .then((response) => {
                 if (!response.ok) {
-                    return response.json().then((error) => {
-                        throw new Error(error.error)
-                    })
+                    if (response.status === 400) {
+                        return response.json().then((error) => {
+                            throw new Error(error.error)
+                        })
+                    } else {
+                        throw new Error('Ошибка при добавлении комментария')
+                    }
                 }
                 return response.json()
             })
@@ -49,13 +67,52 @@ export function addComment() {
             .then(() => {
                 userName.value = ''
                 userComment.value = ''
-                document.querySelector('.add-form-button').disabled = false
+                form.disabled = false
+                loaderForNewComment.style.display = 'none'
             })
             .catch((error) => {
-                console.error('Ошибка при добавлении комментария:', error)
-                alert('Ошибка: ' + error.message)
+                if (error.message === 'Сервер сломался, попробуй позже') {
+                    alert('Сервер сломался, попробуй позже')
+                } else if (
+                    error.name === 'TypeError' &&
+                    error.message.includes('fetch')
+                ) {
+                    alert('Кажется, у вас сломался интернет, попробуйте позже')
+                } else {
+                    alert(error.message)
+                }
+                form.disabled = false
+                loaderForNewComment.style.display = 'none'
             })
     })
+}
+
+function retryPostFetch(url, options, maxRetries = 3, delay = 1000) {
+    return fetch(url, options)
+        .then((response) => {
+            if (response.status === 500 && maxRetries > 0) {
+                console.log(
+                    `Ошибка 500 при отправке, повторяем запрос. Осталось попыток: ${maxRetries - 1}`,
+                )
+                loaderForNewComment.textContent =
+                    'Повторно отправляем комментарий...'
+                loaderForNewComment.style.display = 'block'
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(
+                            retryPostFetch(url, options, maxRetries - 1, delay),
+                        )
+                    }, delay)
+                })
+            }
+            if (response.status === 500) {
+                throw new Error('Сервер сломался, попробуй позже')
+            }
+            return response
+        })
+        .catch((error) => {
+            throw error
+        })
 }
 
 export function likeComment() {
