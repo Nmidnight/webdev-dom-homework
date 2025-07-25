@@ -1,6 +1,5 @@
 import { escapeHtml } from './escapeHtml.js'
-import { commentsArr, fetchCommentsToServer } from './comments.js'
-import { renderComments } from './renderFn.js'
+import { fetchCommentsToServer } from './comments.js'
 
 const loaderForNewComment = document.createElement('div')
 loaderForNewComment.id = 'loader-new-comment'
@@ -10,14 +9,6 @@ loaderForNewComment.style.display = 'none'
 const container = document.querySelector('.container')
 const addForm = container.querySelector('.add-form')
 container.insertBefore(loaderForNewComment, addForm)
-
-function delay(interval = 300) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve()
-        }, interval)
-    })
-}
 
 export function addComment() {
     const addFormButton = document.querySelector('.add-form-button')
@@ -29,11 +20,7 @@ export function addComment() {
         loaderForNewComment.style.display = 'block'
         if (userName.value.trim() === '' || userComment.value.trim() === '') {
             alert('Заполните все поля')
-            return
-        }
-
-        if (userName.value.length < 3 || userComment.value.length < 3) {
-            alert('Имя и комментарий должны быть не короче 3 символов')
+            loaderForNewComment.style.display = 'none'
             return
         }
 
@@ -113,50 +100,4 @@ function retryPostFetch(url, options, maxRetries = 3, delay = 1000) {
         .catch((error) => {
             throw error
         })
-}
-
-export function likeComment() {
-    const commentsList = document.querySelector('.comments')
-    commentsList.addEventListener('click', async function (event) {
-        const target = event.target
-
-        if (target.classList.contains('like-button')) {
-            target.classList.add('loading')
-
-            await delay(2000)
-
-            const id = Number(target.dataset.id)
-            const comment = commentsArr.find((comment) => comment.id === id)
-
-            if (comment) {
-                if (!comment.isLiked) {
-                    comment.likes++
-                } else {
-                    comment.likes--
-                }
-
-                comment.isLiked = !comment.isLiked
-            }
-
-            target.classList.remove('loading')
-            renderComments()
-        }
-    })
-}
-
-export function quoteComment() {
-    const commentsList = document.querySelector('.comments')
-    const userComment = document.querySelector('.add-form-text')
-
-    commentsList.addEventListener('click', function (event) {
-        if (event.target.classList.contains('comment-text')) {
-            const commentEl = event.target.closest('.comment')
-            const author = commentEl.querySelector(
-                '.comment-header > div',
-            ).textContent
-            const commentText = event.target.textContent
-            userComment.value = `"${commentText}"\n\nКомментарий от: ${author}\n\n`
-        }
-        event.stopPropagation()
-    })
 }

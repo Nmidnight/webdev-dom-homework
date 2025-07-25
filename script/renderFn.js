@@ -28,6 +28,42 @@ export function renderComments() {
        </div>
         </div>
         `
+
+        // Добавляем обработчик лайка для конкретной кнопки
+        const likeButton = commentElement.querySelector('.like-button')
+        likeButton.addEventListener('click', async function () {
+            likeButton.classList.add('loading')
+
+            // Имитация задержки
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+
+            const id = Number(likeButton.dataset.id)
+            const commentObj = commentsArr.find((c) => c.id === id)
+
+            if (commentObj) {
+                if (!commentObj.isLiked) {
+                    commentObj.likes++
+                } else {
+                    commentObj.likes--
+                }
+                commentObj.isLiked = !commentObj.isLiked
+            }
+
+            likeButton.classList.remove('loading')
+            renderComments()
+        })
+
+        // Добавляем обработчик цитаты для конкретного текста комментария
+        const commentText = commentElement.querySelector('.comment-text')
+        commentText.addEventListener('click', function () {
+            const userComment = document.querySelector('.add-form-text')
+            const author = commentElement.querySelector(
+                '.comment-header > div',
+            ).textContent
+            const text = commentText.textContent
+            userComment.value = `"${text}"\n\nКомментарий от: ${author}\n\n`
+        })
+
         commentsList.appendChild(commentElement)
     })
 }
