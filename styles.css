@@ -22,7 +22,8 @@ body {
 }
 
 .comment,
-.add-form {
+.add-form,
+.popup-content-form {
   width: 596px;
   box-sizing: border-box;
   background: radial-gradient(75.42% 75.42% at 50% 42.37%,
@@ -39,7 +40,10 @@ body {
 }
 
 .comment {
+  position: relative;
+
   padding: 48px;
+
 }
 
 .comment-header {
@@ -97,7 +101,8 @@ body {
 }
 
 .add-form-name,
-.add-form-text {
+.add-form-text,
+.popup-form-auth {
   font-size: 16px;
   font-family: Helvetica;
   border-radius: 8px;
@@ -120,7 +125,10 @@ body {
   justify-content: flex-end;
 }
 
-.add-form-button {
+.add-form-button,
+.popup-form-signIn,
+.popup-form-signUp,
+.popup-open {
   margin-top: 24px;
   font-size: 24px;
   padding: 10px 20px;
@@ -133,6 +141,8 @@ body {
 .add-form-button:hover {
   opacity: 0.9;
 }
+
+
 
 
 
@@ -157,5 +167,133 @@ body {
   padding: 48px;
   text-align: center;
   font-size: 18px;
+  color: #ffffff;
+}
+
+.popup {
+  display: none;
+}
+
+.popup.active {
+  display: block;
+}
+
+.popup-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.popup-content {
+  position: relative;
+  padding: 48px;
+  background: #202020;
+  color: #ffffff;
+  font-family: Helvetica;
+  border-radius: 20px;
+  filter: drop-shadow(0px 20px 67px rgba(0, 0, 0, 0.08));
+}
+
+.popup-content-form {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 24px;
+
+}
+
+.popup-content-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.popup-form-auth {
+  width: 100%;
+  padding: 11px 22px;
+  box-sizing: border-box;
+}
+
+.popup-form-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  gap: 12px;
+}
+
+.popup-close {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.popup-close img {
+  width: 24px;
+  height: 24px;
+}
+
+.container-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 596px;
+}
+
+.popup-open {
+  margin-bottom: 24px;
+  width: 180px;
+}
+
+.popup-content-form label {
+  align-self: flex-start;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.hello-user {
+  color: #bcec30;
+  font-weight: 400;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.hello-user {
+  color: #bcec30;
+  font-weight: 400;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.delete-button {
+  display: none;
+
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-button img {
+  width: 24px;
+}
+
+.add-form-span {
+  font-size: 24px;
+  font-weight: 600;
   color: #ffffff;
 }
