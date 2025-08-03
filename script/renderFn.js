@@ -1,5 +1,10 @@
-import { commentsArr } from './comments.js'
+import { commentsArr } from './api.js'
 import { nl2br } from './escapeHtml.js'
+import {
+    handleLikeClick,
+    handleQuoteClick,
+    deleteComment,
+} from './eventListener.js'
 
 export function renderComments() {
     const commentsList = document.querySelector('.comments')
@@ -17,6 +22,9 @@ export function renderComments() {
                 hour: '2-digit',
                 minute: '2-digit',
             })}</div>
+            <button type="button" class="delete-button" data-id="${comment.id}" aria-label="Удалить комментарий">
+            <img src="cancel.svg" alt="Удалить комментарий">
+          </button>
         </div>
         <div class="comment-body">
           <div class="comment-text">${nl2br(comment.text)}</div>
@@ -28,42 +36,25 @@ export function renderComments() {
        </div>
         </div>
         `
-
-        // Добавляем обработчик лайка для конкретной кнопки
-        const likeButton = commentElement.querySelector('.like-button')
-        likeButton.addEventListener('click', async function () {
-            likeButton.classList.add('loading')
-
-            // Имитация задержки
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-
-            const id = Number(likeButton.dataset.id)
-            const commentObj = commentsArr.find((c) => c.id === id)
-
-            if (commentObj) {
-                if (!commentObj.isLiked) {
-                    commentObj.likes++
-                } else {
-                    commentObj.likes--
-                }
-                commentObj.isLiked = !commentObj.isLiked
-            }
-
-            likeButton.classList.remove('loading')
-            renderComments()
-        })
-
-        // Добавляем обработчик цитаты для конкретного текста комментария
-        const commentText = commentElement.querySelector('.comment-text')
-        commentText.addEventListener('click', function () {
-            const userComment = document.querySelector('.add-form-text')
-            const author = commentElement.querySelector(
-                '.comment-header > div',
-            ).textContent
-            const text = commentText.textContent
-            userComment.value = `"${text}"\n\nКомментарий от: ${author}\n\n`
-        })
-
         commentsList.appendChild(commentElement)
+
+        const likeButtonEl = commentElement.querySelector('.like-button')
+        const commentTextEl = commentElement.querySelector('.comment-text')
+        if (likeButtonEl) {
+            likeButtonEl.addEventListener(
+                'click',
+                handleLikeClick(likeButtonEl),
+            )
+        }
+
+        if (commentTextEl) {
+            commentTextEl.addEventListener(
+                'click',
+                handleQuoteClick(commentElement),
+            )
+        }
+
+        // Проверяем права на удаление комментария
+        deleteComment(commentElement)
     })
 }

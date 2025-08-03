@@ -1,18 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <title>Проект "Комменты"</title>
-        <meta charset="utf-8" />
-        <link rel="stylesheet" href="styles.css" />
-    </head>
 
-    <body>
-        <div class="container">
-            <ul class="comments">
-                <li id="comments-loader" class="loader">
-                    Подождите немного, комментарии загружаются...
-                </li>
-                <!-- <li class="comment">
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="container-button">
+      <button type="button" class="popup-open">Войти</button>
+    </div>
+    <ul class="comments">
+      <li id="comments-loader" class="loader">
+        Подождите немного, комментарии загружаются...
+      </li>
+      <!-- <li class="comment">
           <div class="comment-header">
             <div>Глеб Фокин</div>
             <div>12.02.22 12:18</div>
@@ -46,25 +50,48 @@
             </div>
           </div>
         </li> -->
-            </ul>
-            <div class="add-form">
-                <input
-                    type="text"
-                    class="add-form-name"
-                    placeholder="Введите ваше имя"
-                />
-                <textarea
-                    class="add-form-text"
-                    placeholder="Введите ваш коментарий"
-                    rows="4"
-                ></textarea>
-                <div class="add-form-row">
-                    <button type="button" class="add-form-button">
-                        Написать
-                    </button>
-                </div>
-            </div>
+    </ul>
+    <div class="add-form">
+      <span class="add-form-span"></span>
+      <!-- <input type="text" class="add-form-name" placeholder="Введите ваше имя"> -->
+      <textarea class="add-form-text" placeholder="Введите ваш коментарий" rows="4"></textarea>
+      <div class="add-form-row">
+        <button type="button" class="add-form-button">
+          Написать
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="popup">
+    <div class="popup-container">
+      <div class="popup-content">
+        <button class="popup-close" type="button">
+          <img src="cancel.svg" alt="close">
+        </button>
+        <div class="popup-content-form">
+          <h2 class="popup-content-title">
+            Авторизуйтесь или зарегистрируйтесь
+          </h2>
+          <label for="name" id="name-label">Имя :</label>
+          <input type="text" name="name" id="name" class="popup-form-auth" placeholder="Иван Иванов" required>
+          <label for="login">Логин :</label>
+          <input type="text" name="login" id="login" class="popup-form-auth" placeholder="Ivan123" required>
+          <label for="password">Пароль :</label>
+          <input type="password" id="password" class="popup-form-auth" name="password" placeholder="123456" required>
+          <div class="popup-form-buttons">
+            <button type="submit" class="popup-form-signIn">
+              Войти
+            </button>
+            <button type="submit" class="popup-form-signUp">
+              Зарегистрироваться
+            </button>
+
+          </div>
         </div>
-        <script type="module" src="script/script.js"></script>
-    </body>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="script/script.js"></script>
+</body>
+
 </html>
